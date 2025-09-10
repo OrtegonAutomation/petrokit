@@ -1,0 +1,236 @@
+Metadata-Version: 2.4
+Name: petrokit
+Version: 0.1.0
+Summary: Librería para análisis de transporte y producción en ingeniería de petróleos
+Home-page: https://github.com/coachito/petrokit
+Author: Camilo Andrés Ortegon Cuevas
+Author-email: Tu Nombre <tuemail@example.com>
+Project-URL: Homepage, https://github.com/tuusuario/petrokit
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Dynamic: author
+Dynamic: home-page
+Dynamic: requires-python
+
+# 🛢️ PetroKit — Biblioteca Python para Ingeniería de Producción y Transporte de Hidrocarburos
+
+
+![PyPI - Placeholder](https://img.shields.io/badge/PyPI-pending-lightgrey) 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
+**PetroKit** es una librería en Python diseñada para ingenieros de petróleos y científicos de datos que trabajan en **producción y transporte de hidrocarburos**.  
+
+Su objetivo es proporcionar un **entorno abierto, reproducible y extensible** que permita:  
+- Modelar curvas **IPR** (Inflow Performance Relationship).  
+- Calcular curvas **VLP** (Vertical Lift Performance).  
+- Estimar **pérdidas de presión en flowlines**.  
+- Integrar ambos en un **Análisis Nodal**.  
+- Usar funciones auxiliares de conversión de unidades y números adimensionales.  
+
+---
+
+## 📑 Tabla de contenidos
+
+1. Visión general  
+2. Instalación  
+3. Conceptos físicos y fórmulas  
+4. API principal  
+5. Ejemplo práctico  
+6. Validación y pruebas  
+7. Buenas prácticas de uso  
+8. Roadmap técnico  
+9. Integración y CI/CD  
+10. Contribuciones y citación  
+11. Licencia  
+
+---
+
+## 🌎 Visión general
+
+PetroKit nace como un **toolkit de producción** para cubrir la brecha entre:  
+
+- **Scripts aislados en Excel/Python** (no reproducibles ni escalables).  
+- **Software comercial cerrado** (costo alto, poca transparencia).  
+
+### En la Fase 1 (MVP):
+- 📈 Modelos básicos de IPR (Vogel, Fetkovich).  
+- 🛠️ VLP simplificada con Darcy–Weisbach.  
+- 🔄 Nodal analysis básico.  
+- 📐 Flowline monofásico con fricción constante.  
+- ✅ Pytest y ejemplos en Jupyter.  
+
+### Fases futuras:
+- Correlaciones multifásicas (Beggs & Brill, Hagedorn & Brown).  
+- Modelos de levantamiento artificial (gas lift, ESP, PCP).  
+- Dashboards interactivos y API REST.  
+
+---
+
+## ⚙️ Instalación
+
+Clonar e instalar en modo editable:
+
+```bash
+git clone https://github.com/OrtegonAutomation/petrokit.git
+cd petrokit
+pip install -e .
+```
+
+Dependencias principales:  
+- `numpy`  
+- `matplotlib`  
+- `pytest` (solo desarrollo)  
+
+---
+
+## 📐 Conceptos físicos y fórmulas
+
+### IPR — Vogel
+q = q_max * (1 - 0.2 * (pwf / p_res) - 0.8 * (pwf / p_res)^2)
+
+### IPR — Fetkovich
+q = J * (p_res - pwf)
+
+### VLP — Darcy–Weisbach (simplificado, monofásico)
+Δp_fric = f * (L / D) * (ρ v^2 / 2)
+
+Columna estática:
+Δp_hydro = ρ * g * H
+
+---
+
+## 📚 API principal
+
+### petrokit.ipr
+- `vogel_ipr(p_res, q_max, pwf)` → caudal [STB/d].  
+- `fetkovich_ipr(p_res, J, pwf)` → caudal lineal.  
+- `ipr_curve_vogel(p_res, q_max, npts=50)` → arrays pwf, q.  
+- `plot_ipr_vogel(p_res, q_max)` → gráfico.  
+
+### petrokit.vlp
+- `vlp_curve(q_range, well_depth, rho, mu, d, f=0.02)` → pwf [psi].  
+- `plot_vlp(...)` → gráfico.  
+
+### petrokit.flowline
+- `flowline_pressure_drop(q, L, d, rho, mu, f=0.02, elev=0)` → ΔP [psi].  
+- `plot_flowline(...)` → curva ΔP vs q.  
+
+### petrokit.nodal
+- `nodal_analysis(p_res, q_max, well_depth, rho, mu, d, npts=50)` → (q_op, pwf_op).  
+- `plot_nodal(...)` → intersección IPR–VLP.  
+
+### petrokit.utils
+- Conversión de unidades: `psi_to_pa`, `stb_to_m3`, etc.  
+- `reynolds_number(q, d, mu, rho)` → número de Reynolds.  
+
+---
+
+## 📊 Ejemplo práctico
+
+```python
+from petrokit.ipr import plot_ipr_vogel
+from petrokit.nodal import nodal_analysis, plot_nodal
+
+p_res = 3000       # psi
+q_max = 1200       # STB/d
+well_depth = 8000  # ft
+rho = 60           # lb/ft³
+mu = 1             # cP
+d = 2.992          # in
+
+# Graficar IPR
+plot_ipr_vogel(p_res, q_max)
+
+# Calcular punto de operación (Nodal Analysis)
+q_op, pwf_op = nodal_analysis(p_res, q_max, well_depth, rho, mu, d)
+print(f"Punto de operación: Q = {q_op:.2f} STB/d, pwf = {pwf_op:.2f} psi")
+
+# Graficar nodal completo
+plot_nodal(p_res, q_max, well_depth, rho, mu, d)
+```
+
+Salida esperada:
+```
+Punto de operación: Q ≈ 850 STB/d, pwf ≈ 1200 psi
+```
+
+📒 Revisa el notebook `examples/nodal_analysis.ipynb` para un estudio completo con gráficas.
+
+---
+
+## 🧪 Validación y pruebas
+
+Ejecutar pruebas unitarias:
+
+```bash
+pytest -v
+```
+
+Cobertura en Fase 1:
+- IPR: condiciones límite (`pwf=0`, `pwf=p_res`).  
+- VLP: monotonicidad, valores positivos.  
+- Flowline: efecto de elevación y longitud.  
+- Nodal: punto válido dentro de rango.  
+
+---
+
+## ✅ Buenas prácticas de uso
+
+- Mantener **coherencia de unidades**: psi, STB/d, ft, in, lb/ft³.  
+- Evitar parámetros no físicos (`densidad ≤ 0`, `diámetro ≤ 0`).  
+- Para sensibilidades usa vectores `numpy`.  
+- Verificar siempre contra datos de campo o software comercial antes de usar en proyectos reales.  
+
+---
+
+## 🚀 Roadmap técnico
+
+### Fase 2 (próxima):
+- Modelos multifásicos (Beggs & Brill, Hagedorn & Brown).  
+- Sensibilidades automáticas (`p_res`, diámetro, viscosidad, profundidad).  
+- Gráficas interactivas con `plotly`.  
+- Librería de propiedades de fluidos.  
+
+### Fase 3 (profesional):
+- Integración con `pandas` y datasets masivos.  
+- Simulaciones accesibles vía **API REST** (FastAPI).  
+- Dashboard web en **Streamlit** para ingenieros de producción.  
+
+---
+
+## 🔄 Integración y CI/CD
+
+- **Tests automáticos**: GitHub Actions (`.github/workflows/tests.yml`).  
+- **Empaquetado PyPI**: `pyproject.toml` + `twine upload`.  
+- **Documentación**: recomendación `mkdocs` o `sphinx` para docs técnicas.  
+
+---
+
+## 🤝 Contribuciones y citación
+
+### Cómo contribuir
+1. Haz un fork.  
+2. Crea una rama: `git checkout -b feature/nueva-funcionalidad`.  
+3. Haz cambios y añade tests.  
+4. Abre un Pull Request.  
+
+### Cita PetroKit
+Si usas PetroKit en investigación:
+
+```bibtex
+@software{petrokit2025,
+  author = {Camilo Andrés Ortegon Cuevas},
+  title = {Librería para análisis de transporte y producción en ingeniería de petróleos},
+  year = {2025},
+  url = {https://github.com/OrtegonAutomation/petrokit},
+}
+```
+
+---
+
+## 📜 Licencia
+
+Este proyecto está bajo licencia MIT.  
+Eres libre de usarlo, modificarlo y distribuirlo citando la fuente.  
