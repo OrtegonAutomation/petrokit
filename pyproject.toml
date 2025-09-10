@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "petrokit"
+version = "0.1.0"
+authors = [
+  { name="Tu Nombre", email="tuemail@example.com" }
+]
+description = "Librería para análisis de transporte y producción en ingeniería de petróleos"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = ["numpy", "matplotlib"]
+
+[project.urls]
+Homepage = "https://github.com/tuusuario/petrokit"

@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: petrokit
+Version: 0.1.0
+Summary: Librería para análisis de transporte y producción en ingeniería de petróleos
+Home-page: https://github.com/coachito/petrokit
+Author: Camilo Andrés Ortegon Cuevas
+Author-email: Tu Nombre <tuemail@example.com>
+Project-URL: Homepage, https://github.com/tuusuario/petrokit
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Dynamic: author
+Dynamic: home-page
+Dynamic: requires-python
