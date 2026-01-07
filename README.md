@@ -171,9 +171,8 @@ q_op2, pwf_op2 = nodal_analysis(
     ipr_model="standing",
     ipr_kwargs={"p_b": 2200, "J": 1.5},
 )
-
+```
 Y si quieres también el dispatcher de VLP:
-
 
 ```python
 import numpy as np
@@ -181,7 +180,7 @@ from petrokit.vlp import vlp_curve_model
 
 q = np.linspace(0, 1200, 50)
 pwf = vlp_curve_model("darcy", q, well_depth=8000, rho=60, mu=1, d=2.992, f=0.02)
-
+```
 ### 4) Arregla “Salida esperada” del ejemplo
 En vez de números fijos, cambia por algo que siempre sea verdad:
 
