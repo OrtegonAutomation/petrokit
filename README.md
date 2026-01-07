@@ -184,7 +184,7 @@ pwf = vlp_curve_model("darcy", q, well_depth=8000, rho=60, mu=1, d=2.992, f=0.02
 ### 4) Arregla “Salida esperada” del ejemplo
 En vez de números fijos, cambia por algo que siempre sea verdad:
 
-```
+
 **Salida esperada:**
 - Si `VLP(q=0) < p_res` → `q_op > 0`.
 - Si `VLP(q=0) ≥ p_res` → `q_op = 0` (caso “no-flow”).
