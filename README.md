@@ -87,6 +87,23 @@ $$
 q = J \cdot (p_{res} - p_{wf})
 $$
 
+**IPR — Jones (no-Darcy / fracturados)**
+
+$$ \Delta p = p_{res} - p_{wf} = C q + D q^2 $$
+
+(IPR se obtiene resolviendo la raíz positiva de la cuadrática en q).
+
+**IPR — Standing (gas solution)**
+
+Para $p_{wf} \ge p_b$:
+
+$$ q = J \cdot (p_{res} - p_{wf}) $$
+
+Para $p_{wf} < p_b$ (dos fases), se usa Vogel calibrando $q_{max}$ para continuidad en $p_b$:
+
+$$ q = q_{max}\left(1 - 0.2\frac{p_{wf}}{p_{res}} - 0.8\left(\frac{p_{wf}}{p_{res}}\right)^2\right) $$
+
+
 **VLP — Darcy–Weisbach (simplificado, monofásico)**
 
 $$
@@ -105,10 +122,13 @@ $$
 
 ### petrokit.ipr
 
-* `vogel_ipr(p_res, q_max, pwf)` → caudal \[STB/d].
-* `fetkovich_ipr(p_res, J, pwf)` → caudal lineal.
-* `ipr_curve_vogel(p_res, q_max, npts=50)` → arrays pwf, q.
-* `plot_ipr_vogel(p_res, q_max)` → gráfico.
+  * `jones_ipr(p_res, C, D, pwf)` → caudal con no-Darcy (C·q + D·q²).
+  * `standing_ipr(p_res, p_b, J, pwf)` → IPR compuesto (sobre/bajo bubble point).
+  * `ipr_curve_fetkovich(p_res, J, npts=50)` → arrays pwf, q.
+  * `ipr_curve_jones(p_res, C, D, npts=50)` → arrays pwf, q.
+  * `ipr_curve_standing(p_res, p_b, J, npts=50)` → arrays pwf, q.
+  * `plot_ipr_fetkovich(...)`, `plot_ipr_jones(...)`, `plot_ipr_standing(...)` → gráficos.
+
 
 ### petrokit.vlp
 
@@ -176,7 +196,7 @@ pytest -v
 
 Cobertura en Fase 1:
 
-* IPR: condiciones límite (`pwf=0`, `pwf=p_res`).
+* IPR: condiciones límite (pwf=0, pwf=p_res) + casos Jones/Standing.
 * VLP: monotonicidad, valores positivos.
 * Flowline: efecto de elevación y longitud.
 * Nodal: punto válido dentro de rango.
@@ -232,7 +252,7 @@ Cobertura en Fase 1:
 
 1. **Producción**
 
-   * Extender modelos IPR: Jones (fracturados), Standing (gas solution).
+   * Extender modelos IPR: Jones (fracturados) ✅, Standing (gas solution) ✅.
    * VLP con correlaciones: Beggs & Brill, Hagedorn & Brown.
 
 2. **Transporte**
