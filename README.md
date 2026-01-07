@@ -145,7 +145,6 @@ $$
 
 ### petrokit.nodal
 
-* `nodal_analysis(p_res, q_max, well_depth, rho, mu, d, npts=50)` → (q\_op, pwf\_op).
 * `plot_nodal(...)` → intersección IPR–VLP.
 * `nodal_analysis(p_res, q_max, well_depth, rho, mu, d, npts=50, ipr_model="vogel", vlp_model="darcy", ipr_kwargs=None, vlp_kwargs=None)` → (q_op, pwf_op).
 * Nota: puede retornar `q_op = 0` si `VLP(q=0) ≥ p_res` (no hay energía para levantar la columna).
@@ -175,7 +174,7 @@ q_op2, pwf_op2 = nodal_analysis(
 
 Y si quieres también el dispatcher de VLP:
 
-```md
+
 ```python
 import numpy as np
 from petrokit.vlp import vlp_curve_model
@@ -186,7 +185,7 @@ pwf = vlp_curve_model("darcy", q, well_depth=8000, rho=60, mu=1, d=2.992, f=0.02
 ### 4) Arregla “Salida esperada” del ejemplo
 En vez de números fijos, cambia por algo que siempre sea verdad:
 
-```md
+```
 **Salida esperada:**
 - Si `VLP(q=0) < p_res` → `q_op > 0`.
 - Si `VLP(q=0) ≥ p_res` → `q_op = 0` (caso “no-flow”).
