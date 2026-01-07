@@ -29,3 +29,10 @@ __all__ = [
     "nodal",
     "utils"
 ]
+
+from .ipr import jones_ipr, standing_ipr
+
+__all__ = [
+    "jones_ipr",
+    "standing_ipr",
+]
