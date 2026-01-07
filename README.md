@@ -134,6 +134,9 @@ $$
 
 * `vlp_curve(q_range, well_depth, rho, mu, d, f=0.02)` → pwf \[psi].
 * `plot_vlp(...)` → gráfico.
+* `available_vlp_models()` → modelos disponibles (ej. `"darcy"`, `"beggs_brill"`, `"hagedorn_brown"`).
+* `vlp_curve_model(model, q_range, well_depth, rho, mu, d, **kwargs)` → VLP por modelo (dispatcher).
+
 
 ### petrokit.flowline
 
@@ -144,11 +147,50 @@ $$
 
 * `nodal_analysis(p_res, q_max, well_depth, rho, mu, d, npts=50)` → (q\_op, pwf\_op).
 * `plot_nodal(...)` → intersección IPR–VLP.
+* `nodal_analysis(p_res, q_max, well_depth, rho, mu, d, npts=50, ipr_model="vogel", vlp_model="darcy", ipr_kwargs=None, vlp_kwargs=None)` → (q_op, pwf_op).
+* Nota: puede retornar `q_op = 0` si `VLP(q=0) ≥ p_res` (no hay energía para levantar la columna).
+
 
 ### petrokit.utils
 
 * Conversión de unidades: `psi_to_pa`, `stb_to_m3`, etc.
 * `reynolds_number(q, d, mu, rho)` → número de Reynolds.
+
+---
+
+### Selección de modelos (API extendida)
+
+```python
+from petrokit.nodal import nodal_analysis
+
+# Default: ipr_model="vogel", vlp_model="darcy"
+q_op, pwf_op = nodal_analysis(p_res=3000, q_max=1200, well_depth=8000, rho=60, mu=1, d=2.992)
+
+# Standing (requiere kwargs)
+q_op2, pwf_op2 = nodal_analysis(
+    p_res=3000, q_max=1200, well_depth=8000, rho=60, mu=1, d=2.992,
+    ipr_model="standing",
+    ipr_kwargs={"p_b": 2200, "J": 1.5},
+)
+
+Y si quieres también el dispatcher de VLP:
+
+```md
+```python
+import numpy as np
+from petrokit.vlp import vlp_curve_model
+
+q = np.linspace(0, 1200, 50)
+pwf = vlp_curve_model("darcy", q, well_depth=8000, rho=60, mu=1, d=2.992, f=0.02)
+
+### 4) Arregla “Salida esperada” del ejemplo
+En vez de números fijos, cambia por algo que siempre sea verdad:
+
+```md
+**Salida esperada:**
+- Si `VLP(q=0) < p_res` → `q_op > 0`.
+- Si `VLP(q=0) ≥ p_res` → `q_op = 0` (caso “no-flow”).
+
 
 ---
 
@@ -194,12 +236,13 @@ Ejecutar pruebas unitarias:
 pytest -v
 ```
 
-Cobertura en Fase 1:
+Cobertura:
 
 * IPR: condiciones límite (pwf=0, pwf=p_res) + casos Jones/Standing.
 * VLP: monotonicidad, valores positivos.
 * Flowline: efecto de elevación y longitud.
-* Nodal: punto válido dentro de rango.
+* Nodal: punto de operación (incluye caso “no-flow” cuando `VLP(0) ≥ p_res`).
+
 
 ---
 
