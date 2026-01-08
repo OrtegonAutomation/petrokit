@@ -173,17 +173,20 @@ def vlp_curve_beggs_brill(q_range, well_depth, rho, mu, d, **kwargs):
 
 def vlp_curve_hagedorn_brown(q_range, well_depth, rho, mu, d, **kwargs):
     """
-    VLP usando Hagedorn & Brown (prototipo en petrokit.vlp_advanced).
+    VLP usando Hagedorn & Brown (core en petrokit.multiphase_hb).
 
     kwargs opcionales:
       theta_deg: default 90
       p_wh: default 0
-      q_gas_mscf_d: default 0
-      rho_g, mu_g: defaults razonables
-      roughness_ft: default 0.0005  (ojo: este prototipo asume roughness en ft)
-      f_guess: opcional
+      q_gas_mscf_d: gas constante (MSCF/d). Default 0
+      q_gas_range_mscf_d: array gas (MSCF/d) mismo largo que q_range
+      rho_g: default 2.0
+      mu_g: default 0.02
+      eps_in: rugosidad (in). Default 0.0006
+      k_holdup: default 0.15
     """
-    from .vlp_advanced import hagedorn_brown_dp
+    import numpy as np
+    from .multiphase_hb import hagedorn_brown_pressure_gradient
 
     q = np.asarray(q_range, dtype=float)
     L = float(well_depth)
@@ -194,28 +197,61 @@ def vlp_curve_hagedorn_brown(q_range, well_depth, rho, mu, d, **kwargs):
     theta_deg = float(kwargs.get("theta_deg", 90.0))
     p_wh = float(kwargs.get("p_wh", 0.0))
 
-    qg = float(kwargs.get("q_gas_mscf_d", 0.0))
+    qg_const = kwargs.get("q_gas_mscf_d", None)
+    qg_range = kwargs.get("q_gas_range_mscf_d", None)
+    if (qg_const is not None) and (qg_range is not None):
+        raise ValueError("Usa solo uno: q_gas_mscf_d o q_gas_range_mscf_d")
+
+    if qg_range is not None:
+        qg_mscf_d = np.asarray(qg_range, dtype=float)
+        if qg_mscf_d.shape != q.shape:
+            raise ValueError("q_gas_range_mscf_d debe tener el mismo tamaño que q_range")
+    else:
+        qg_mscf_d = np.full_like(q, float(qg_const) if qg_const is not None else 0.0)
+
     rho_g = float(kwargs.get("rho_g", 2.0))
     mu_g = float(kwargs.get("mu_g", 0.02))
-    roughness_ft = float(kwargs.get("roughness_ft", 0.0005))
-    f_guess = kwargs.get("f_guess", None)
+    eps_in = float(kwargs.get("eps_in", 0.0006))
+    k_holdup = float(kwargs.get("k_holdup", 0.15))
+
+    # conversions
+    STB_TO_FT3 = 5.615
+    MSCF_TO_FT3 = 1000.0
+    DAY_TO_S = 86400.0
+
+    d_ft = d_in / 12.0
+    area = np.pi * (d_ft / 2.0) ** 2
 
     pwf = np.zeros_like(q, dtype=float)
-    for i, ql in enumerate(q):
-        dp_total_psi, _holdup = hagedorn_brown_dp(
-            q_liq_stb_d=float(ql),
-            q_gas_mscf_d=qg,
+
+    # Para q=0: columna estática líquida
+    sin_theta = np.sin(np.deg2rad(theta_deg))
+
+    for i, (ql_stb_d, qg_m) in enumerate(zip(q, qg_mscf_d)):
+        ql_ft3_s = (float(ql_stb_d) * STB_TO_FT3) / DAY_TO_S
+        qg_ft3_s = (float(qg_m) * MSCF_TO_FT3) / DAY_TO_S
+
+        if ql_ft3_s <= 0.0 and qg_ft3_s <= 0.0:
+            dp_dz = (rho_l * sin_theta) / 144.0
+            pwf[i] = p_wh + dp_dz * L
+            continue
+
+        v_sl = ql_ft3_s / area
+        v_sg = qg_ft3_s / area
+
+        res = hagedorn_brown_pressure_gradient(
+            v_sl_ft_s=float(v_sl),
+            v_sg_ft_s=float(v_sg),
             d_in=d_in,
-            L_ft=L,
-            rho_l=rho_l,
-            rho_g=rho_g,
-            mu_l=mu_l,
-            mu_g=mu_g,
             theta_deg=theta_deg,
-            roughness=roughness_ft,
-            f_guess=f_guess,
+            rho_l_lbm_ft3=rho_l,
+            rho_g_lbm_ft3=rho_g,
+            mu_l_cp=mu_l,
+            mu_g_cp=mu_g,
+            eps_in=eps_in,
+            k_holdup=k_holdup,
         )
-        pwf[i] = p_wh + float(dp_total_psi)
+        pwf[i] = p_wh + float(res.dp_dz_psi_per_ft) * L
 
     return pwf
 
