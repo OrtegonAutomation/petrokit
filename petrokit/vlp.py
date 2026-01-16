@@ -2,9 +2,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# ---------------------------
-# VLP monofásico (legacy)
-# ---------------------------
+
+def _gas_density_lbm_ft3(p_psia: float, t_f: float, gamma_g: float, z: float) -> float:
+    # rho = (P * MW) / (Z * R * T)
+    # MW(lb/lbmol) = 28.97 * gamma_g
+    # R = 10.7316 (psia*ft3)/(lbmol*R)
+    t_r = t_f + 459.67
+    mw = 28.97 * float(gamma_g)
+    R = 10.7316
+    return (float(p_psia) * mw) / (float(z) * R * t_r)
+
 
 def vlp_curve(q_range, well_depth, rho, mu, d, f=0.02):
     """
@@ -60,11 +67,6 @@ def plot_vlp(q_range, well_depth, rho, mu, d, f=0.02):
     plt.legend()
     plt.show()
 
-
-# ---------------------------
-# API extendida (Phase 2): dispatcher de modelos
-# ---------------------------
-
 def available_vlp_models():
     """
     Modelos disponibles para VLP (según README):
@@ -72,12 +74,10 @@ def available_vlp_models():
       - "beggs_brill"
       - "hagedorn_brown"
     """
-    return ["darcy", "beggs_brill", "hagedorn_brown"]
-
+    return ["darcy", "beggs_brill", "beggs_brill_blackoil", "hagedorn_brown"]
 
 def _norm_model(name: str) -> str:
     return (name or "").strip().lower().replace("-", "_").replace(" ", "_")
-
 
 def vlp_curve_beggs_brill(q_range, well_depth, rho, mu, d, **kwargs):
     """
@@ -170,7 +170,6 @@ def vlp_curve_beggs_brill(q_range, well_depth, rho, mu, d, **kwargs):
 
     return pwf
 
-
 def vlp_curve_hagedorn_brown(q_range, well_depth, rho, mu, d, **kwargs):
     """
     VLP usando Hagedorn & Brown (core en petrokit.multiphase_hb).
@@ -256,6 +255,50 @@ def vlp_curve_hagedorn_brown(q_range, well_depth, rho, mu, d, **kwargs):
     return pwf
 
 
+def vlp_curve_beggs_brill_blackoil(q_range, well_depth, rho=None, mu=None, d=None, **kwargs):
+    """
+    Acepta dos estilos:
+    1) estilo dispatcher: (q_range, well_depth, rho, mu, d, **kwargs)
+    2) estilo legacy: kwargs con d_in y mu_l_cp
+    """
+    # Compatibilidad legacy
+    if d is None and "d_in" in kwargs:
+        d = float(kwargs.pop("d_in"))
+    if mu is None and "mu_l_cp" in kwargs:
+        mu = float(kwargs.pop("mu_l_cp"))
+    if rho is None:
+        rho = 50.0  # dummy, se ignora igualmente
+
+    from .pvt import build_pvt_table, oil_gamma_o
+
+    try:
+        t_f = float(kwargs.pop("t_f"))
+        api = float(kwargs.pop("api"))
+        gamma_g = float(kwargs.pop("gamma_g"))
+    except KeyError as e:
+        raise TypeError(f"vlp_curve_beggs_brill_blackoil requiere kwarg {e.args[0]}") from e
+
+    p_ref = float(kwargs.pop("p_ref_psia", 2000.0))
+    z_method = str(kwargs.pop("z_method", "papay"))
+
+    tab = build_pvt_table([p_ref], t_f=t_f, api=api, gamma_g=gamma_g, z_method=z_method)
+    bo = float(tab["Bo_rb_stb"][0])
+    z = float(tab["Z"][0])
+
+    rho_sto = 62.4 * oil_gamma_o(api)
+    rho_l = rho_sto / bo
+    rho_g = _gas_density_lbm_ft3(p_ref, t_f, gamma_g, z)
+
+    return vlp_curve_beggs_brill(
+        q_range=q_range,
+        well_depth=well_depth,
+        rho=rho_l,
+        mu=float(mu),
+        d=float(d),
+        rho_g=rho_g,
+        **kwargs,
+    )
+
 def vlp_curve_model(model, q_range, well_depth, rho, mu, d, **kwargs):
     """
     Dispatcher de VLP por modelo.
@@ -272,6 +315,9 @@ def vlp_curve_model(model, q_range, well_depth, rho, mu, d, **kwargs):
     if m in ("hagedorn_brown", "hagedorn-brown", "hb"):
         return vlp_curve_hagedorn_brown(q_range, well_depth=well_depth, rho=rho, mu=mu, d=d, **kwargs)
 
+    if m in ("beggs_brill_blackoil", "bb_blackoil", "beggsbrill_blackoil"):
+        return vlp_curve_beggs_brill_blackoil(q_range, well_depth=well_depth, rho=rho, mu=mu, d=d, **kwargs)
+    
     raise ValueError(f"Modelo VLP inválido: {model}. Usa: {available_vlp_models()}")
 
 
@@ -282,4 +328,5 @@ __all__ = [
     "vlp_curve_model",
     "vlp_curve_beggs_brill",
     "vlp_curve_hagedorn_brown",
+    "vlp_curve_beggs_brill_blackoil"
 ]

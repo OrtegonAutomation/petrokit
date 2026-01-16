@@ -222,7 +222,7 @@ def nodal_analysis_detail(
             d=float(d),
             **vlp_kwargs,
         )
-    except Exception:
+    except (ImportError, AttributeError):
         f = float(vlp_kwargs.get("f", 0.02))
         pwf_vlp_on_q = vlp_curve(q_grid, float(well_depth), float(rho), float(mu), float(d), f=f)
 

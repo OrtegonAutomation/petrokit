@@ -49,7 +49,6 @@ PetroKit nace como un **toolkit de producción** para cubrir la brecha entre:
 
 ### Fases futuras:
 
-* Correlaciones multifásicas (Beggs & Brill, Hagedorn & Brown).
 * Modelos de levantamiento artificial (gas lift, ESP, PCP).
 * Dashboards interactivos y API REST.
 
@@ -134,7 +133,7 @@ $$
 
 * `vlp_curve(q_range, well_depth, rho, mu, d, f=0.02)` → pwf \[psi].
 * `plot_vlp(...)` → gráfico.
-* `available_vlp_models()` → modelos disponibles (ej. `"darcy"`, `"beggs_brill"`, `"hagedorn_brown"`).
+* `available_vlp_models()` → modelos disponibles (ej. `"darcy"`, `"beggs_brill"`, `"hagedorn_brown", "beggs_brill_blackoil"`).
 * `vlp_curve_model(model, q_range, well_depth, rho, mu, d, **kwargs)` → VLP por modelo (dispatcher).
 
 
@@ -219,7 +218,8 @@ plot_nodal(p_res, q_max, well_depth, rho, mu, d)
 **Salida esperada:**
 
 ```
-Punto de operación: Q ≈ 850 STB/d, pwf ≈ 1200 psi
+- Si VLP(q=0) < p_res → q_op > 0
+- Si VLP(q=0) ≥ p_res → q_op = 0 (caso no-flow)
 ```
 
 Revisa el notebook `examples/analisis_nodal_español.ipynb` para un estudio completo con gráficas.
@@ -258,7 +258,7 @@ Cobertura:
 
 ---
 
-## 🔹 Fase 1: **MVP (Producto Mínimo Viable)**
+## 🔹 Fase 1: **MVP (Producto Mínimo Viable)**  Estado: completada ✅
 
 🎯 Objetivo: Tener un paquete funcional, probado y con ejemplos básicos.
 
@@ -287,24 +287,24 @@ Cobertura:
 
 ---
 
-## 🔹 Fase 2: **Ampliación de Modelos**
+## 🔹 Fase 2: **Ampliación de Modelos**  Estado: completada ✅
 
 🎯 Objetivo: Pasar de un demo académico a un toolkit más completo.
 
 1. **Producción**
 
    * Extender modelos IPR: Jones (fracturados) ✅, Standing (gas solution) ✅.
-   * VLP con correlaciones: Beggs & Brill, Hagedorn & Brown.
+   * VLP con correlaciones: Beggs & Brill ✅, Hagedorn & Brown ✅
 
 2. **Transporte**
 
-   * Caída de presión multifásica en tuberías y flowlines.
-   * Consideración de ángulo de inclinación y régimen de flujo.
+   * Caída de presión multifásica en tuberías y flowlines ✅
+   * Consideración de ángulo de inclinación y régimen de flujo. ✅
 
 3. **Utilidades**
 
-   * Tablas PVT simplificadas.
-   * Conversión entre unidades (STB ↔ m³, psi ↔ Pa).
+   * Tablas PVT simplificadas ✅ (integradas vía VLP black-oil)
+   * Conversión entre unidades (STB ↔ m³, psi ↔ Pa). ✅
 
 4. **Más ejemplos**
 
