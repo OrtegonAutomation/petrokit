@@ -6,11 +6,11 @@ build-backend = "setuptools.build_meta"
 name = "petrokit"
 version = "0.1.0"
 authors = [
-  { name="Tu Nombre", email="tuemail@example.com" }
+  { name="Camilo Andres Ortegon Cuevas", email="camilo.ortegonc@outlook.com" },
 ]
 description = "Librería para análisis de transporte y producción en ingeniería de petróleos"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = ["numpy", "matplotlib"]
 
 [project.urls]

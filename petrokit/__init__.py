@@ -15,24 +15,12 @@ from .flowline import *  # idem
 from .nodal import *     # idem
 from .utils import *     # idem
 
-# Mantener acceso a submódulos también
-from . import ipr, vlp, flowline, nodal, utils
+from .ipr import jones_ipr, standing_ipr, vogel_ipr, fetkovich_ipr
+from .vlp import vlp_curve_model, available_vlp_models
+from .nodal import nodal_analysis, nodal_analysis_detail
 
 __all__ = [
-    "vogel_ipr",
-    "fetkovich_ipr",
-    "ipr_curve_vogel",
-    "plot_ipr_vogel",
-    "ipr",
-    "vlp",
-    "flowline",
-    "nodal",
-    "utils"
-]
-
-from .ipr import jones_ipr, standing_ipr
-
-__all__ = [
-    "jones_ipr",
-    "standing_ipr",
+    "jones_ipr", "standing_ipr", "vogel_ipr", "fetkovich_ipr",
+    "vlp_curve_model", "available_vlp_models",
+    "nodal_analysis", "nodal_analysis_detail",
 ]

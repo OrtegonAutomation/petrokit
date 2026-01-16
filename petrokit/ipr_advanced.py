@@ -77,14 +77,18 @@ def jones_ipr(p_res, J, pwf, s=0):
     """
     if p_res <= 0 or J <= 0:
         raise ValueError("p_res y J deben ser positivos")
-    if (1 + s) <= 0:
-        raise ValueError("El factor (1+s) debe ser positivo")
+    # Jones simplificado: no dejamos que 1+s sea 0 para evitar división por cero
+    # s < -1 representa estimulación teórica infinita en este modelo simplificado
+    denom = (1 + s)
+    if denom <= 0:
+        denom = 1e-3 # Valor mínimo para evitar indeterminación
+
 
     pwf = np.atleast_1d(pwf).astype(float)
     delta_p = p_res - pwf
     delta_p = np.where(delta_p < 0, 0, delta_p)
 
-    q_eff = (J / (1 + s)) * delta_p
+    q_eff = (J / denom) * delta_p
     return q_eff[0] if q_eff.size == 1 else q_eff
 
 
@@ -210,3 +214,13 @@ if __name__ == "__main__":
 
     # Sensibilidad Jones
     plot_jones_sensitivity(p_res=p_res, J=J)
+
+
+__all__ = [
+    "standing_ipr",
+    "jones_ipr",
+    "ipr_curve",
+    "plot_ipr",
+    "plot_standing_sensitivity",
+    "plot_jones_sensitivity",
+]
