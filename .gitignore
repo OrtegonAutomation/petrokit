@@ -36,3 +36,7 @@ ENV/
 
 # PetroKit specific
 .gemini/
+
+# Sphinx documentation
+docs/build/
+docs/_build/
