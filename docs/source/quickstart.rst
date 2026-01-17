@@ -91,10 +91,7 @@ PetroKit también soporta modelos más avanzados:
    )
    
    # VLP con Beggs & Brill (flujo multifásico)
-   # Nota: Requiere definir q_range primero
-   import numpy as np
-   q_range = np.linspace(0, 1200, 50)
-   
+   # Nota: q_range ya fue definido anteriormente
    pwf_bb = vlp_curve_model(
        "beggs_brill", q_range, 
        well_depth=8000, rho=60, mu=1, d=2.992,
