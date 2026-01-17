@@ -78,6 +78,7 @@ PetroKit también soporta modelos más avanzados:
 
    from petrokit.ipr import ipr_curve_jones, ipr_curve_standing
    from petrokit.vlp import vlp_curve_model, available_vlp_models
+   import numpy as np
    
    # Ver modelos VLP disponibles
    print(available_vlp_models())  # ['darcy', 'beggs_brill', 'hagedorn_brown', ...]
@@ -91,7 +92,7 @@ PetroKit también soporta modelos más avanzados:
    )
    
    # VLP con Beggs & Brill (flujo multifásico)
-   # Nota: q_range ya fue definido anteriormente
+   q_range = np.linspace(0, 1200, 50)
    pwf_bb = vlp_curve_model(
        "beggs_brill", q_range, 
        well_depth=8000, rho=60, mu=1, d=2.992,
