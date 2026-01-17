@@ -77,20 +77,30 @@ PetroKit también soporta modelos más avanzados:
 .. code-block:: python
 
    from petrokit.ipr import ipr_curve_jones, ipr_curve_standing
-   from petrokit.vlp import vlp_curve_model
+   from petrokit.vlp import vlp_curve_model, available_vlp_models
    
-   # IPR Jones (pozos fracturados)
+   # Ver modelos VLP disponibles
+   print(available_vlp_models())  # ['darcy', 'beggs_brill', 'hagedorn_brown', ...]
+   
+   # IPR Jones (pozos fracturados - no-Darcy flow)
    pwf_jones, q_jones = ipr_curve_jones(p_res=3000, C=0.5, D=0.001)
    
-   # IPR Standing (gas solution)
+   # IPR Standing (gas solution - compuesto sobre/bajo bubble point)
    pwf_standing, q_standing = ipr_curve_standing(
        p_res=3000, p_b=2200, J=1.5
    )
    
-   # VLP con Beggs & Brill
+   # VLP con Beggs & Brill (flujo multifásico)
+   # Nota: Requiere definir q_range primero
+   import numpy as np
+   q_range = np.linspace(0, 1200, 50)
+   
    pwf_bb = vlp_curve_model(
        "beggs_brill", q_range, 
-       well_depth=8000, rho=60, mu=1, d=2.992
+       well_depth=8000, rho=60, mu=1, d=2.992,
+       ql_bpd=800,  # Caudal de líquido [bbl/d]
+       qg_scfd=50000,  # Caudal de gas [scf/d]
+       angle_deg=90  # Ángulo vertical [grados]
    )
 
 Próximos pasos
