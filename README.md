@@ -68,6 +68,8 @@ Dependencias principales:
 
 * `numpy`
 * `matplotlib`
+* `plotly` (gráficos interactivos)
+* `ipywidgets` (widgets interactivos para Jupyter)
 * `pytest` (solo desarrollo)
 
 ---
@@ -224,6 +226,26 @@ plot_nodal(p_res, q_max, well_depth, rho, mu, d)
 
 Revisa el notebook `examples/analisis_nodal_español.ipynb` para un estudio completo con gráficas.
 
+### Ejemplos avanzados (Fase 3)
+
+Para análisis interactivo con **Plotly**:
+
+```python
+from petrokit.nodal import nodal_analysis
+import plotly.graph_objects as go
+
+# ... (parámetros y cálculos)
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=q_ipr, y=pwf_ipr, name='IPR'))
+fig.add_trace(go.Scatter(x=q_vlp, y=pwf_vlp, name='VLP'))
+fig.show()
+```
+
+Revisa estos notebooks para más ejemplos:
+* `examples/interactive_plotly_visualizations.ipynb` - Visualizaciones interactivas con Plotly
+* `examples/parametric_sensitivity_interactive.ipynb` - Análisis de sensibilidad con ipywidgets
+
 ---
 
 ## Validación y pruebas
@@ -313,25 +335,32 @@ Cobertura:
 
 ---
 
-## 🔹 Fase 3: **Profesionalización**
+## 🔹 Fase 3: **Profesionalización**  Estado: completada ✅
 
 🎯 Objetivo: Convertirlo en un paquete distribuible e instalable con `pip`.
 
-1. **Infraestructura**
+1. **Infraestructura** ✅
 
-   * Publicación en **PyPI** (`pip install petrokit`).
-   * Configuración de `pyproject.toml` o `setup.py`.
-   * GitHub Actions para correr `pytest` en cada commit.
+   * Configuración de `pyproject.toml` y `setup.py` ✅
+   * GitHub Actions para correr `pytest` en cada commit ✅
+   * URLs del repositorio correctamente configuradas ✅
+   * Dependencias organizadas (core + dev) ✅
+   * Preparado para publicación en **PyPI** ✅
 
-2. **Documentación profesional**
+2. **Documentación profesional** ✅
 
-   * Página web con **Sphinx + ReadTheDocs**.
-   * Ejemplos con gráficos interactivos (Plotly).
+   * Estructura completa con **Sphinx** ✅
+   * Configuración para **ReadTheDocs** (`.readthedocs.yml`) ✅
+   * Documentación API completa con autodoc ✅
+   * Guías de instalación, inicio rápido y contribución ✅
+   * Ejemplos con gráficos interactivos (Plotly) ✅
 
-3. **Ejemplos avanzados**
+3. **Ejemplos avanzados** ✅
 
-   * Sensibilidad paramétrica con `ipywidgets`.
-   * Comparación entre varios escenarios (e.g., tubing vs flowline).
+   * Sensibilidad paramétrica con `ipywidgets` ✅
+   * Visualizaciones interactivas con Plotly ✅
+   * Dashboard multi-panel para análisis integrado ✅
+   * Comparación entre varios escenarios (múltiples diámetros, modelos IPR) ✅
 
 ---
 

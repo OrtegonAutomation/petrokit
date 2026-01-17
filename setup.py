@@ -8,12 +8,17 @@ setup(
     description="Librería para análisis de transporte y producción en ingeniería de petróleos",
     long_description=open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/coachito/petrokit",  # o tu repo cuando lo subas
+    url="https://github.com/OrtegonAutomation/petrokit",
     packages=find_packages(),
     install_requires=[
         "numpy",
-        "matplotlib"
+        "matplotlib",
+        "plotly",
+        "ipywidgets"
     ],
+    extras_require={
+        "dev": ["pytest", "pytest-cov", "sphinx", "sphinx-rtd-theme"]
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

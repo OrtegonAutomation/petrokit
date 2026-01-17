@@ -11,7 +11,12 @@ authors = [
 description = "Librería para análisis de transporte y producción en ingeniería de petróleos"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["numpy", "matplotlib"]
+dependencies = ["numpy", "matplotlib", "plotly", "ipywidgets"]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov", "sphinx", "sphinx-rtd-theme"]
 
 [project.urls]
-Homepage = "https://github.com/tuusuario/petrokit"
+Homepage = "https://github.com/OrtegonAutomation/petrokit"
+Repository = "https://github.com/OrtegonAutomation/petrokit"
+Issues = "https://github.com/OrtegonAutomation/petrokit/issues"
