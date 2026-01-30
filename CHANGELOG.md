@@ -65,7 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MIT License
 - `.gitignore` configuration
 
-## [0.1.0] - 2025-01
+## [0.1.0] - 2025-01-17
 
 ### Added
 - Initial release

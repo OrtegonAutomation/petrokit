@@ -45,15 +45,13 @@
 *.dylib binary
 *.whl binary
 *.egg binary
-*.zip binary
-*.tar binary
-*.gz binary
 
 # Archives
 *.7z binary
 *.jar binary
 *.rar binary
 *.tar binary
+*.gz binary
 *.zip binary
 
 # Exclude files from exporting

@@ -109,7 +109,7 @@ Si añades nueva funcionalidad:
 
 ### Estilo Python
 
-- Seguir [PEP 8](https://pep8.org/)
+- Seguir [PEP 8](https://peps.python.org/pep-0008/)
 - Usar nombres descriptivos para variables y funciones
 - Mantener funciones pequeñas y enfocadas
 - Añadir docstrings a todas las funciones públicas
@@ -133,7 +133,7 @@ def funcion_ejemplo(param1: float, param2: str) -> float:
         Descripción del valor retornado
 
     Raises:
-        ValueError: Cuándo ocurre este error
+        ValueError: Cuando ocurre este error
 
     Example:
         >>> resultado = funcion_ejemplo(1.0, "test")
