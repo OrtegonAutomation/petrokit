@@ -267,8 +267,8 @@ def build_pvt_table(
         "Bo_rb_stb": bo,
         "Z": z,
         "Bg_rb_scf": bg,
-        "pb_psia": float(pb),
-        "rsb_scf_stb": float(rsb),
+        "pb_psia": np.array([pb]),
+        "rsb_scf_stb": np.array([rsb]),
     }
 
 
