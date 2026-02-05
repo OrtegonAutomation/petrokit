@@ -1,8 +1,10 @@
 
 # PetroKit — Biblioteca Python para Ingeniería de Producción y Transporte de Hidrocarburos
 
-![PyPI - Placeholder](https://img.shields.io/badge/PyPI-pending-lightgrey)
+![Tests](https://img.shields.io/github/actions/workflow/status/OrtegonAutomation/petrokit/tests.yml?branch=main&label=tests)
+![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![PyPI - Placeholder](https://img.shields.io/badge/PyPI-pending-lightgrey)
 
 **PetroKit** es una librería en Python diseñada para ingenieros de petróleos y científicos de datos que trabajan en **producción y transporte de hidrocarburos**.
 
